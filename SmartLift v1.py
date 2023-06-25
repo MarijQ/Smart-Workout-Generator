@@ -1,6 +1,7 @@
 # todo
+# workout exercise selection (CNS fatigue, during workout and EMA over time)
+# muscular fatigue (not flat 2.0, reduced custom to muscle based on higher frequency 50% EMA muscle usage)
 # set up forecast
-# workout exercise selection (muscle fatigue - 2.0 muscle use, CNS fatigue, re-score after each selection)
 # write to history file (function with input)
 # CNS fatigue (tag exercises, current EMA, workout cap)
 # Injury
@@ -18,44 +19,41 @@ pd.set_option('display.max_columns', 20)
 
 class Engine():
     def __init__(self):
-        self.read_files()
+        self.set_up()
+        self.generate_workout(self.TODAY)
+        # self.output()
+
+    # set up lists/arrays/constants
+    TODAY = dt.date.today() + dt.timedelta(days=0)
+    FRESHNESS_WEIGHT = 0
+    BALANCE_WEIGHT = 1
+    EFFICIENCY_WEIGHT = 0.5
+    PIPELINE = []
+
+    def set_up(self):
+        self.history = pd.read_csv("inputs/history.csv")
+        self.exercises_data = pd.read_csv("inputs/exercises.csv")
+        self.muscle_targets_data = pd.read_csv("inputs/muscle_targets.csv")
         # set up dataframes
         self.exercise_score = self.exercises_data.loc[
             self.exercises_data["Active"] == 1, ["ID", "Exercise", "Type", "Efficiency"]]
         self.exercise_score[["Freshness"]] = 0
         self.muscle_score = pd.DataFrame(list(self.exercises_data.columns[5:]), columns=["Muscle"])
         self.muscle_score[["Sets_per_week"]] = 0
-        # calculate scores
-        self.freshness_calc()
-        self.balance_calc()
-        self.muscle_target_calc()
-        # select exercises for next workout
-        self.new_balance_calc()
-        self.overall_scores_calc()
-        self.output()
-
-    # set up lists/arrays/constants
-    TODAY = dt.date.today() + dt.timedelta(days=0)
-    FRESHNESS_WEIGHT = 0.5
-    BALANCE_WEIGHT = 1
-    EFFICIENCY_WEIGHT = 0.5
-
-    def read_files(self):
-        self.history = pd.read_csv("inputs/history.csv")
-        self.exercises_data = pd.read_csv("inputs/exercises.csv")
-        self.muscle_targets_data = pd.read_csv("inputs/muscle_targets.csv")
+        self.muscle_score[["Workout_fatigue"]] = 0
+        self.muscle_score[["Temp_fatigue"]] = 0
 
     def freshness_calc(self):
         # FRESHNESS: calculate exercise scores EMA
-        for index, row in self.exercise_score.iterrows():
+        for index, row in self.exercise_score.iterrows():  # Loop through all exercises
             # find history instances with that exercise present
             mask = np.column_stack([self.history[col] == row["ID"] for col in self.history])
             selected_history = self.history.loc[mask.any(axis=1)]
             # sum EMA contribution from each past instance
             EMA_score = 0
-            for index2, row2 in selected_history.iterrows():
+            for index2, row2 in selected_history.iterrows():  # Loop through history records
                 date_diff = (
-                            self.TODAY - dt.datetime.strptime(row2["Date"], '%d/%m/%Y').date()).days
+                        self.TODAY - dt.datetime.strptime(row2["Date"], '%d/%m/%Y').date()).days
                 EMA_score += 0.1 * 1 * 0.9 ** date_diff
             self.exercise_score.loc[index, ["Freshness"]] = round(EMA_score * 100, 0)
 
@@ -79,8 +77,9 @@ class Engine():
                     except ValueError:
                         continue
                     if \
-                    self.exercises_data.loc[self.exercises_data["ID"] == exercise_ID, "Type"].iloc[
-                        0] == "Cardio":
+                            self.exercises_data.loc[
+                                self.exercises_data["ID"] == exercise_ID, "Type"].iloc[
+                                0] == "Cardio":
                         score = float(score) / 2
                     else:
                         score = float(score)
@@ -100,7 +99,7 @@ class Engine():
         self.muscle_score["Balance"] = self.muscle_score.apply(fn2, axis=1)
 
     def new_balance_calc(self):
-        ## calculate balance scores
+        ## calculate projected balance scores for each exercise
         for index, row in self.exercise_score.iterrows():  # loop through all (active) exercises
             self.muscle_score[["New_balance"]] = self.muscle_score[["Balance"]]
             exercise_ID = row["ID"]
@@ -125,7 +124,7 @@ class Engine():
             self.exercise_score.loc[index, ["Balance"]] = RMS
 
     def overall_scores_calc(self):
-        ## calculate overall scores
+        ## calculate overall scores for each exercise
         self.exercise_score[["Score"]] = 0
         freshness_best = self.exercise_score["Freshness"].min()
         freshness_worst = self.exercise_score["Freshness"].max()
@@ -144,7 +143,91 @@ class Engine():
                                       efficiency_best - efficiency_worst))
                               ** self.EFFICIENCY_WEIGHT)
         self.exercise_score["Score"] = self.exercise_score.apply(fn3, axis=1)
-        print(self.exercise_score, "\n", self.muscle_score)
+        # print(self.exercise_score, "\n", self.muscle_score)
+
+    def generate_workout(self, date):
+        # refresh score baselines from history
+        self.freshness_calc()
+        self.balance_calc()
+        self.muscle_target_calc()
+        # calculate projected scores for exercises
+        self.new_balance_calc()
+        self.overall_scores_calc()
+        # reset workout fatigue values
+        self.muscle_score[["Workout_fatigue"]] = 0
+        print("Old total balance:", (self.muscle_score["Balance"] ** 2).sum())
+        # select lifts exercise
+        for i in range(4):
+            self.select_top_exercise("Lift")
+        for i in range(1):
+            self.select_top_exercise("Cardio")
+        print("New total balance:", (self.muscle_score["Balance"] ** 2).sum())
+        print("Extras:")
+        for i in range(5):
+            self.select_top_exercise("Lift")
+
+    def select_top_exercise(self, type):
+        # Filter for muscle fatigue limits
+        for index, row in self.exercise_score.iterrows():  # loop through all exercises
+            self.muscle_score[["Temp_fatigue"]] = 0
+            for index2, row2 in self.muscle_score.iterrows():  # add fatigue for each muscle
+                score = \
+                    self.exercises_data.loc[
+                        self.exercises_data["ID"] == row["ID"], row2["Muscle"]].iloc[0]
+                try:
+                    int(score)
+                except ValueError:
+                    continue
+                if self.exercises_data.loc[self.exercises_data["ID"] == row["ID"], "Type"].iloc[
+                    0] == "Cardio":
+                    score = float(score) / 2
+                else:
+                    score = float(score)
+                self.muscle_score.loc[index2, ["Temp_fatigue"]] += score
+                expected_fatigue = self.muscle_score.loc[index2, ["Workout_fatigue"]].iloc[0] + \
+                                   self.muscle_score.loc[index2, ["Temp_fatigue"]].iloc[0]
+                if expected_fatigue > 2:
+                    self.exercise_score.drop(index, inplace=True)
+                    # print("Dropped", row["Exercise"], " > ", row2["Muscle"], expected_fatigue)
+                    break
+
+        # Find top exercise (lift)
+        row = self.exercise_score[self.exercise_score["Type"] == type].sort_values(by="Score",
+                                                                                   ascending=False).head(
+            1)
+        exercise_index = row.index.tolist()[0]
+
+        # Update muscle balance + fatigue
+        self.muscle_score[["Temp_fatigue"]] = 0
+        self.muscle_score[["New_balance"]] = self.muscle_score[["Balance"]]
+        exercise_ID = row["ID"].iloc[0]
+        for index2, row2 in self.muscle_score.iterrows():  # add EMA contribution for each muscle
+            score = \
+                self.exercises_data.loc[
+                    self.exercises_data["ID"] == exercise_ID, row2["Muscle"]].iloc[0]
+            try:
+                int(score)
+            except ValueError:
+                continue
+            if self.exercises_data.loc[self.exercises_data["ID"] == exercise_ID, "Type"].iloc[
+                0] == "Cardio":
+                score = float(score) / 2
+            else:
+                score = float(score)
+            new_balance = max(0, row2["Balance"] - 0.1 * score * 3 * 7)
+            self.muscle_score.loc[index2, ["New_balance"]] = new_balance
+            self.muscle_score.loc[index2, ["Temp_fatigue"]] += score
+        self.muscle_score["Balance"] = self.muscle_score["New_balance"]
+        self.muscle_score["Workout_fatigue"] += self.muscle_score["Temp_fatigue"]
+
+        # Write to list and remove from exercises
+        self.PIPELINE.append(row["ID"].iloc[0])
+        self.exercise_score.drop([exercise_index], inplace=True)
+        print("Selected", row["ID"].iloc[0], row["Exercise"].iloc[0])
+
+        # Refresh projected scores for exercises
+        self.new_balance_calc()
+        self.overall_scores_calc()
 
     def output(self):
         ## select top 5 exercises

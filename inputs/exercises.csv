@@ -1,9 +1,9 @@
 ﻿ID,Exercise,Type,Efficiency,Active,Pecs,Lats,Traps,Rhomboids,Lower back,Side delts,Front delts,Rear delts,Biceps,Triceps,Forearms,Front abs,Deep abs,Obliques,Quads,Hamstrings,Glutes,Calves,Adductors,Abductors
-1,Cycling machine,Cardio,,1,,,,,,,,,,,,,,,1,0.8,0.7,1,,
-2,Lateral elliptical machine,Cardio,,1,,,,,,,,,,,,,,,1,0.7,0.8,0.7,0.8,0.8
-3,Rowing machine,Cardio,,1,,1,0.7,0.7,0.7,,,,0.5,,0.7,,0.5,,0.7,0.7,0.9,,,
-4,Stair climbing machine,Cardio,,1,,,,,,,,,,,,,,,1,0.7,0.7,1,0.5,
-5,Treadmill running,Cardio,,1,,,,,,,,,,,,,,,1,0.7,0.7,1,,
+1,Cycling machine,Cardio,4,1,,,,,,,,,,,,,,,1,0.8,0.7,1,,
+2,Lateral elliptical machine,Cardio,4,1,,,,,,,,,,,,,,,1,0.7,0.8,0.7,0.8,0.8
+3,Rowing machine,Cardio,4,1,,1,0.7,0.7,0.7,,,,0.5,,0.7,,0.5,,0.7,0.7,0.9,,,
+4,Stair climbing machine,Cardio,4,1,,,,,,,,,,,,,,,1,0.7,0.7,1,0.5,
+5,Treadmill running,Cardio,4,1,,,,,,,,,,,,,,,1,0.7,0.7,1,,
 6,Back Hyperextensions,Lift,2,,,,,,1,,,,,,,,,,,0.5,0.7,,,
 7,Barbell bent-over rows,Lift,3,,,1,0.7,0.7,0.8,,,,0.5,,0.5,,,,,,,,,
 8,Barbell deadlifts,Lift,3,1,,,,,1,,,,,,1,,0.5,,0.6,0.7,1,,,
