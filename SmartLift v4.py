@@ -3,6 +3,11 @@
 # Injury
 # Bodyweight workouts
 # Time per workout slider instead of fatigue one
+# Generate written text description of user preferences / read in user preferences from LLM
+# Calories for cardio only - reward for cardio as well as lifting
+# User irrational preference - prefer X rather than Y for the same benefit
+# How are you feeling today - easy / medium / hard
+# Imbalance > remaining
 
 # imports
 import pandas as pd
@@ -20,25 +25,20 @@ pd.set_option('display.width', 400)
 pd.set_option('display.min_rows', 20)
 pd.set_option('display.max_columns', 20)
 
-
 class Engine():
     def __init__(self):
         self.TODAY = dt.date.today()
-        # set up and read files
-        self.constants()
-        self.set_up()
-        self.filter_out_today_entries()
 
     def constants(self):
         # Hard-coded constants
         self.EMA_LIFT_RATIO = 0
         self.PIPELINE = []
         # User-defined constants
-        self.SUNNY = True  # Toggle for Sunny
+        self.SUNNY = False  # Toggle for Sunny
         if self.SUNNY:
             self.BASE_SETS_PER_WEEK = 4  # Target sets per week per muscle (further multiplied by muscle target weighting) - 4 to 12 is a reasonable range
             self.MUSCLE_FATIGUE_LIMIT = 1.5
-            self.LIFT_RATIO = 0.5  # Target proportion of workout duration for lifts - e.g. 0.7 for strength focus, 0.3 for cardio focus
+            self.LIFT_RATIO = 0.4  # Target proportion of workout duration for lifts - e.g. 0.7 for strength focus, 0.3 for cardio focus
             self.TARGET_DURATION = 40  # Total exercise duration in minutes
             self.WEEKDAY_TARGET_DURATION = 20  # Custom total duration for weekdays
             # Select user priorities (score of X means that top exercise is 2^X times more likely to be picked)
@@ -47,24 +47,26 @@ class Engine():
             self.BALANCE_WEIGHT = 0.5  # PHYSIQUE - prioritise hitting target muscles to grow
             self.UNILATERAL_WEIGHT = 0  # BALANCE - prioritise single-limb exercises fixing asymmetry
 
-            self.FITNESS_WEIGHT = 0.5  # FITNESS - prioritise cardio to improve fitness (compare with freshness)
+            self.FITNESS_WEIGHT = 1  # FITNESS - prioritise higher-intensity/longer cardio to improve fitness (compare with freshness)
+
+            self.FRESHNESS_WEIGHT = 0.5  # NOVELTY - try to mix up new exercises to keep things interesting
+            self.DURATION_WEIGHT = 0.5  # DURATION - prioritise exercises that each take longer
+
             self.FLEXIBILITY_WEIGHT = 0  # FLEXIBILITY - prioritise stretches to improve flexibility
-            self.FRESHNESS_WEIGHT = 1  # NOVELTY - try to mix up new exercises to keep things interesting
-            self.DURATION_WEIGHT = 0  # DURATION - prioritise exercises that each take longer
 
             self.IS_HOME = False  # Toggle for home exercises
         else:
             self.BASE_SETS_PER_WEEK = 6  # Target sets per week per muscle (further multiplied by muscle target weighting) - 4 to 12 is a reasonable range
             self.MUSCLE_FATIGUE_LIMIT = 1.5
-            self.LIFT_RATIO = 0.5  # Target proportion of workout duration for lifts - e.g. 0.7 for strength focus, 0.3 for cardio focus
-            self.TARGET_DURATION = 40  # Total exercise duration in minutes
+            self.LIFT_RATIO = 0.7  # Target proportion of workout duration for lifts - e.g. 0.7 for strength focus, 0.3 for cardio focus
+            self.TARGET_DURATION = 45  # Total exercise duration in minutes
             # Select user priorities (score of X means that top exercise is 2^X times more likely to be picked)
             # -1 Strongly avoid --- -0.5 Avoid --- 0 Don't care --- 0.5 Favour --- 1 Strongly favour
             self.COMPOUNDNESS_WEIGHT = 1  # STRENGTH - prioritise highly compound full-body exercises
             self.BALANCE_WEIGHT = 0.5  # PHYSIQUE - prioritise hitting target muscles to grow
             self.UNILATERAL_WEIGHT = 0.5  # BALANCE - prioritise single-limb exercises fixing asymmetry
 
-            self.FITNESS_WEIGHT = 0.5  # FITNESS - prioritise cardio to improve fitness (compare with freshness)
+            self.FITNESS_WEIGHT = 0.5  # FITNESS - prioritise higher-intensity/longer cardio to improve fitness (compare with freshness)
             self.FLEXIBILITY_WEIGHT = 0  # FLEXIBILITY - prioritise stretches to improve flexibility
             self.FRESHNESS_WEIGHT = 0.5  # NOVELTY - try to mix up new exercises to keep things interesting
             self.DURATION_WEIGHT = 0  # DURATION - prioritise exercises that each take longer
@@ -95,6 +97,7 @@ class Engine():
 
     def filter_out_today_entries(self):
         """Remove entries from history that are already logged for today or future dates."""
+        # print(self.TODAY)
         # Convert 'Date' to datetime objects and then to date objects with new format
         self.history['Date'] = self.history['Date'].apply(lambda x: dt.datetime.strptime(x, '%d/%m/%y').date())
         # Filter out entries that are today or in the future
@@ -446,26 +449,27 @@ class Engine():
     def forecast(self, offset, days, extras, stats):
         self.TODAY += dt.timedelta(days=offset)
         for i in range(days):
-            self.TODAY += dt.timedelta(days=i)
-
             self.prep_workout()
-            home_flag = "(at home) " if self.IS_HOME else ""
-            print(f"\n=============== Day {i}: {self.TODAY}, Duration: {self.TARGET_DURATION} mins {home_flag}===============\n")
+            formatted_date = self.TODAY.strftime("%a %d %b")
+            home_flag = "(home) " if self.IS_HOME else ""
+            print(f"\n=============== Day {i+1}: {formatted_date}, Duration: {self.TARGET_DURATION} mins {home_flag}===============\n")
             # print(self.exercise_score)
 
-            if stats > 0:
+            if 0 in stats:
                 print("------Starting Stats------")
                 print(f"EMA lift ratio: {round(self.EMA_LIFT_RATIO, 2)}, Lift limit: {round(self.lift_duration_limit, 0)} mins")
                 print(f"Old avg. sets per week: {round(self.muscle_score["Sets_per_week"].mean(), 1)} (higher = better)")
                 print(f"Old avg. imbalance: {round((self.muscle_score["Imbalance"] ** 2).mean() ** 0.5, 2)} (lower = better)")
                 print("------Generated Workout------")
             self.generate_workout(self.TODAY, extras)
-            if stats > 0:
+            if 0 in stats:
                 print("------Updated Stats------")
-                if stats > 1:
-                    print(self.muscle_score[["Muscle", "Workout_fatigue", "EMA_fatigue", "Sets_per_week", "Target", "Imbalance"]])
                 print(f"New avg. sets per week: {round(self.muscle_score["Sets_per_week"].mean(), 1)} (higher = better)")
                 print(f"New avg. imbalance: {round((self.muscle_score["Imbalance"] ** 2).mean() ** 0.5, 2)} (lower = better)")
+            if 1 in stats:
+                print(self.muscle_score[["Muscle", "Workout_fatigue", "EMA_fatigue", "Sets_per_week", "Target", "Imbalance"]])
+
+            self.TODAY += dt.timedelta(days=1)
 
     def update_history_with_names(self):
         # Create a dictionary to map exercise IDs to names
@@ -492,4 +496,4 @@ class Engine():
 
 if __name__ == "__main__":
     x = Engine()
-    x.forecast(1, 10, False, 0)
+    x.forecast(1, 1, False, [])
