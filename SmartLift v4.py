@@ -16,6 +16,7 @@ import datetime as dt
 import csv
 import warnings
 import re
+import random as rd
 
 # Suppress FutureWarning
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -25,6 +26,7 @@ pd.set_option('display.width', 400)
 pd.set_option('display.min_rows', 20)
 pd.set_option('display.max_columns', 20)
 
+
 class Engine():
     def __init__(self):
         self.TODAY = dt.date.today()
@@ -33,12 +35,13 @@ class Engine():
         # Hard-coded constants
         self.EMA_LIFT_RATIO = 0
         self.PIPELINE = []
+        self.MUSCLE_FATIGUE_EMA_BIAS = 0.5
         # User-defined constants
         self.SUNNY = False  # Toggle for Sunny
         if self.SUNNY:
             self.BASE_SETS_PER_WEEK = 4  # Target sets per week per muscle (further multiplied by muscle target weighting) - 4 to 12 is a reasonable range
-            self.MUSCLE_FATIGUE_LIMIT = 1.5
-            self.LIFT_RATIO = 0.4  # Target proportion of workout duration for lifts - e.g. 0.7 for strength focus, 0.3 for cardio focus
+            self.MUSCLE_FATIGUE_LIMIT = 0.8  # How frequently you can use the same muscle: e.g. 1 = Heavy biceps workout every 2 days, 0.5 = Heavy biceps workout every 4 days (2/x)
+            self.TARGET_LIFT_RATIO = 0.4  # Target proportion of workout duration for lifts - e.g. 0.7 for strength focus, 0.3 for cardio focus
             self.TARGET_DURATION = 40  # Total exercise duration in minutes
             self.WEEKDAY_TARGET_DURATION = 20  # Custom total duration for weekdays
             # Select user priorities (score of X means that top exercise is 2^X times more likely to be picked)
@@ -57,14 +60,14 @@ class Engine():
             self.IS_HOME = False  # Toggle for home exercises
         else:
             self.BASE_SETS_PER_WEEK = 6  # Target sets per week per muscle (further multiplied by muscle target weighting) - 4 to 12 is a reasonable range
-            self.MUSCLE_FATIGUE_LIMIT = 1.5
-            self.LIFT_RATIO = 0.7  # Target proportion of workout duration for lifts - e.g. 0.7 for strength focus, 0.3 for cardio focus
-            self.TARGET_DURATION = 45  # Total exercise duration in minutes
+            self.MUSCLE_FATIGUE_LIMIT = 1  # How frequently you can use the same muscle: e.g. 1 = Heavy biceps workout every 2 days, 0.5 = Heavy biceps workout every 4 days (2/x)
+            self.TARGET_LIFT_RATIO = 0.7  # Target proportion of workout duration for lifts - e.g. 0.7 for strength focus, 0.3 for cardio focus
+            self.TARGET_DURATION = 35  # Total exercise duration in minutes
             # Select user priorities (score of X means that top exercise is 2^X times more likely to be picked)
             # -1 Strongly avoid --- -0.5 Avoid --- 0 Don't care --- 0.5 Favour --- 1 Strongly favour
-            self.COMPOUNDNESS_WEIGHT = 1  # STRENGTH - prioritise highly compound full-body exercises
-            self.BALANCE_WEIGHT = 0.5  # PHYSIQUE - prioritise hitting target muscles to grow
-            self.UNILATERAL_WEIGHT = 0.5  # BALANCE - prioritise single-limb exercises fixing asymmetry
+            self.COMPOUNDNESS_WEIGHT = 0  # STRENGTH - prioritise highly compound full-body exercises
+            self.BALANCE_WEIGHT = 1  # PHYSIQUE - prioritise hitting target muscles to grow
+            self.UNILATERAL_WEIGHT = 0  # BALANCE - prioritise single-limb exercises fixing asymmetry
 
             self.FITNESS_WEIGHT = 0.5  # FITNESS - prioritise higher-intensity/longer cardio to improve fitness (compare with freshness)
             self.FLEXIBILITY_WEIGHT = 0  # FLEXIBILITY - prioritise stretches to improve flexibility
@@ -173,6 +176,9 @@ class Engine():
 
     def muscle_imbalance_calc(self):
         # BALANCE: calculate muscle sets per week EMA
+        self.muscle_score[["Sets_per_week"]] = 0
+        self.muscle_score[["EMA_fatigue"]] = 0
+
         for index, row in self.history.iterrows():  # loop through history records
             for i in range(10):  # loop through exercises completed
                 exercise_entry = row.iloc[i + 1]
@@ -201,10 +207,14 @@ class Engine():
 
                     date_diff = (self.TODAY - dt.datetime.strptime(row["Date"], '%d/%m/%y').date()).days
                     EMA_score_balance = 0.1 * balance_score * 0.9 ** date_diff
-                    EMA_score_fatigue = 0.5 * fatigue_score * 0.5 ** (date_diff - 1) if exercise_type != "Cardio" else 0
+                    EMA_score_fatigue = self.MUSCLE_FATIGUE_EMA_BIAS * fatigue_score * (1 - self.MUSCLE_FATIGUE_EMA_BIAS) ** date_diff if exercise_type != "Cardio" else 0
+                    # #
+                    # if index2 == 14:
+                    #     print(date_diff, balance_score, EMA_score_balance)
 
                     self.muscle_score.loc[index2, ["Sets_per_week"]] += EMA_score_balance * 3 * 7
                     self.muscle_score.loc[index2, ["EMA_fatigue"]] += max(0, EMA_score_fatigue)  # Ensure non-negative
+            # print(round(self.muscle_score.loc[14, ["Sets_per_week"]][0],2), row["Date"], date_diff)
 
     def muscle_target_calc(self):
         # Calculate muscle EMA target directly using BASE_SETS_PER_WEEK and Priority
@@ -317,23 +327,44 @@ class Engine():
         self.overall_scores_calc()
         # reset workout fatigue values
         self.muscle_score[["Workout_fatigue"]] = 0
-        # Calculate the current hard total limit duration for lifts
+        # Calculate the lift probabilities for the current workout
         if self.IS_HOME:
-            self.lift_duration_limit = 1 * self.TARGET_DURATION
+            self.lift_probability = 1
         else:
-            self.lift_duration_limit = min(self.LIFT_RATIO + 0.2, max(self.LIFT_RATIO - 0.2, (2 * self.LIFT_RATIO - self.EMA_LIFT_RATIO + 0.1))) * self.TARGET_DURATION
-        # print(self.lift_duration_limit)
+            self.lift_probability = min(self.TARGET_LIFT_RATIO + 0.2, max(self.TARGET_LIFT_RATIO - 0.2, (2 * self.TARGET_LIFT_RATIO - self.EMA_LIFT_RATIO)))
+        # print(self.lift_probability)
 
     def generate_workout(self, date, extras):
-        # Generate lifts first
-        self.remaining_duration = self.lift_duration_limit
+        # Initialise
         self.exercise_score_init = self.exercise_score.copy()
-        self.select_exercises("Lift")
+        self.remaining_duration = self.TARGET_DURATION
+        # Track the first words of selected exercises
+        self.selected_first_words = set()
 
-        # Generate cardio exercises
-        self.remaining_duration += self.TARGET_DURATION - self.lift_duration_limit
-        self.exercise_score = self.exercise_score_init.copy()
-        self.select_exercises("Cardio")
+        # Generate as many exercises as possible until the duration cap is reached
+        seeds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        while self.remaining_duration >= 7:  # Assuming minimum exercise duration is 7 minutes
+            self.exercise_score = self.exercise_score_init.copy()
+            seeds.pop(0)
+
+            # Convert date to an integer seed based on timestamp
+            date_time = dt.datetime.combine(date, dt.datetime.min.time())
+            timestamp = int(date_time.timestamp())
+            seed_value = timestamp + seeds[0] * 3600  # Adding hours to ensure distinct values at the hour level
+            rd.seed(seed_value)
+
+            # Filter for the specified exercise type
+            if rd.random() < self.lift_probability:
+                self.exercise_score = self.exercise_score[self.exercise_score["Type"] == "Lift"]
+            else:
+                self.exercise_score = self.exercise_score[self.exercise_score["Type"] == "Cardio"]
+            if self.exercise_score.empty:
+                print("No more suitable exercises!")
+                break
+            # Select the top exercise
+            selected = self.select_top_exercise()
+            if not selected:
+                break
 
         # Add the new row to the history DataFrame
         new_row = pd.DataFrame([[date.strftime('%d/%m/%y')] + self.PIPELINE], columns=self.history.columns[:len([date] + self.PIPELINE)])
@@ -347,37 +378,12 @@ class Engine():
             print("Extras:")
             self.select_top_extras(5)
 
-        # Update history with names and save
+        # Recalculate muscle stats + update history
+        self.muscle_imbalance_calc()
+        self.muscle_target_calc()
         self.update_history_with_names()
 
-    def select_exercises(self, exercise_type):
-        # Filter for the specified exercise type
-        self.exercise_score = self.exercise_score[self.exercise_score["Type"] == exercise_type]
-
-        # Track the first words of selected exercises
-        selected_first_words = set()
-
-        # Generate as many exercises as possible until the duration cap is reached
-        while self.remaining_duration >= 7:  # Assuming minimum exercise duration is 7 minutes
-            if self.exercise_score.empty:
-                print(f"No more suitable {exercise_type.lower()} exercises!")
-                break
-            # Select the top exercise
-            selected = self.select_top_exercise(selected_first_words)
-            if not selected:
-                break
-
-    def select_top_extras(self, count):
-        # Filter out rows where ID is in the pipeline
-        filtered_exercises = self.exercise_score_init[~self.exercise_score_init['ID'].isin([int(x) for x in self.PIPELINE])]
-
-        # Select the top N exercises based on overall score without considering fatigue
-        top_exercises = filtered_exercises.sort_values(by="Score", ascending=False).head(count)
-
-        for index, row in top_exercises.iterrows():
-            print("Extra option:", row["ID"], row["Exercise"], "(", row["Duration"], "mins )")
-
-    def select_top_exercise(self, selected_first_words):
+    def select_top_exercise(self):
         # Filter for duration limits
         for index, row in self.exercise_score.iterrows():  # loop through all exercises
             if row["Duration"] > self.remaining_duration:
@@ -385,25 +391,42 @@ class Engine():
 
         # Filter out exercises with the same first word as already selected ones
         self.exercise_score['First_Word'] = self.exercise_score['Exercise'].apply(lambda x: x.split()[0])
-        self.exercise_score = self.exercise_score[~self.exercise_score['First_Word'].isin(selected_first_words)]
+        self.exercise_score = self.exercise_score[~self.exercise_score['First_Word'].isin(self.selected_first_words)]
 
-        # Find top exercise regardless of type
+        # Filter for muscle fatigue limits
+        for index, row in self.exercise_score.iterrows():  # loop through all exercises
+            if row["Type"] != "Cardio":
+                self.muscle_score[["Temp_fatigue"]] = 0
+                for index2, row2 in self.muscle_score.iterrows():  # add fatigue for each muscle
+                    score = self.exercises_data.loc[self.exercises_data["ID"] == row["ID"], row2["Muscle"]].iloc[0]
+                    try:
+                        int(score)
+                    except ValueError:
+                        continue
+                    score = float(score)
+                    self.muscle_score.loc[index2, ["Temp_fatigue"]] += float(score)
+                    expected_new_EMA_fatigue = self.MUSCLE_FATIGUE_EMA_BIAS * (self.muscle_score.loc[index2, ["Workout_fatigue"]][0] + self.muscle_score.loc[index2, ["Temp_fatigue"]][0]) + self.muscle_score.loc[index2, ["EMA_fatigue"]][0]
+                    # if row["ID"] == 77 and row2["Muscle"] == "Quads":
+                    #     print(row2["Workout_fatigue"], row2["Temp_fatigue"], expected_new_EMA_fatigue)
+                    if expected_new_EMA_fatigue > self.MUSCLE_FATIGUE_LIMIT:
+                        self.exercise_score.drop(index, inplace=True)
+                        break
+
+        # Find top exercise
         if self.exercise_score.empty:
             print("No more suitable exercises!")
             return False
-
         row = self.exercise_score.sort_values(by="Score", ascending=False).head(1)
         try:
             exercise_index = row.index.tolist()[0]
         except IndexError:
             print("No more suitable exercises!")
             return False
-
         exercise_ID = row["ID"].iloc[0]
         duration = row["Duration"].iloc[0]
         first_word = row["First_Word"].iloc[0]
 
-        # Update muscle imbalance + fatigue only for lifts
+        # Update mid-workout muscle imbalance + fatigue (only for lifts)
         if row["Type"].iloc[0] != "Cardio":
             self.muscle_score[["Temp_fatigue"]] = 0
             self.muscle_score[["New_imbalance"]] = self.muscle_score[["Imbalance"]]
@@ -425,17 +448,27 @@ class Engine():
 
         # Write to list and remove from exercises
         self.PIPELINE.append(str(exercise_ID))
-        self.exercise_score.drop([exercise_index], inplace=True)
+        self.exercise_score_init.drop([exercise_index], inplace=True)
         print("Selected", exercise_ID, row["Exercise"].iloc[0], "(", duration, "mins )")
 
         # Add the first word to the set of selected first words
-        selected_first_words.add(first_word)
+        self.selected_first_words.add(first_word)
 
         # Refresh projected scores for exercises
         self.new_imbalance_calc()
         self.overall_scores_calc()
 
         return True
+
+    def select_top_extras(self, count):
+        # Filter out rows where ID is in the pipeline
+        filtered_exercises = self.exercise_score_init[~self.exercise_score_init['ID'].isin([int(x) for x in self.PIPELINE])]
+
+        # Select the top N exercises based on overall score without considering fatigue
+        top_exercises = filtered_exercises.sort_values(by="Score", ascending=False).head(count)
+
+        for index, row in top_exercises.iterrows():
+            print("Extra option:", row["ID"], row["Exercise"], "(", row["Duration"], "mins )")
 
     def write_to_file(self, date):
         try:
@@ -452,15 +485,17 @@ class Engine():
             self.prep_workout()
             formatted_date = self.TODAY.strftime("%a %d %b")
             home_flag = "(home) " if self.IS_HOME else ""
-            print(f"\n=============== Day {i+1}: {formatted_date}, Duration: {self.TARGET_DURATION} mins {home_flag}===============\n")
-            # print(self.exercise_score)
-
+            print(f"\n=============== Day {i + 1}: {formatted_date}, Duration: {self.TARGET_DURATION} mins {home_flag}===============\n")
+            if 2 in stats:
+                print(self.exercise_score[["Exercise", "Freshness", "Imbalance", "Score"]])
             if 0 in stats:
                 print("------Starting Stats------")
-                print(f"EMA lift ratio: {round(self.EMA_LIFT_RATIO, 2)}, Lift limit: {round(self.lift_duration_limit, 0)} mins")
+                print(f"EMA lift ratio: {round(self.EMA_LIFT_RATIO, 2)}, Lift probability today: {round(self.lift_probability, 2)}")
                 print(f"Old avg. sets per week: {round(self.muscle_score["Sets_per_week"].mean(), 1)} (higher = better)")
                 print(f"Old avg. imbalance: {round((self.muscle_score["Imbalance"] ** 2).mean() ** 0.5, 2)} (lower = better)")
-                print("------Generated Workout------")
+            if 1 in stats and i == 0:
+                print(self.muscle_score[["Muscle", "Workout_fatigue", "EMA_fatigue", "Sets_per_week", "Target", "Imbalance"]])
+            print("------Generated Workout------")
             self.generate_workout(self.TODAY, extras)
             if 0 in stats:
                 print("------Updated Stats------")
@@ -496,4 +531,4 @@ class Engine():
 
 if __name__ == "__main__":
     x = Engine()
-    x.forecast(1, 1, False, [])
+    x.forecast(0, 1, False, [0])
