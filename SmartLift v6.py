@@ -107,14 +107,14 @@ class Engine():
 
         self.exercise_score[["Freshness"]] = 0
         self.muscle_score = pd.DataFrame(list(self.exercises_data.columns[12:32]), columns=["Muscle"])
-        self.muscle_score[["Sets_per_week"]] = 0.0  # Initialize as float
+        self.muscle_score[['Sets_per_week']] = 0.0  # Initialize as float
         self.muscle_score[["Workout_fatigue"]] = 0.0  # Initialize as float
         self.muscle_score[["Temp_fatigue"]] = 0.0  # Initialize as float
         self.muscle_score[["EMA_fatigue"]] = 0.0  # Initialize as float
         self.PIPELINE = []
 
         # Convert types (in case they aren't already float)
-        self.muscle_score["Sets_per_week"] = self.muscle_score["Sets_per_week"].astype(float)
+        self.muscle_score['Sets_per_week'] = self.muscle_score['Sets_per_week'].astype(float)
         self.muscle_score["Workout_fatigue"] = self.muscle_score["Workout_fatigue"].astype(float)
         self.muscle_score["Temp_fatigue"] = self.muscle_score["Temp_fatigue"].astype(float)
         self.muscle_score["EMA_fatigue"] = self.muscle_score["EMA_fatigue"].astype(float)
@@ -256,7 +256,7 @@ class Engine():
 
     def muscle_deviation_calc(self):
         # BALANCE: calculate muscle sets per week EMA
-        self.muscle_score[["Sets_per_week"]] = 0
+        self.muscle_score[['Sets_per_week']] = 0
         self.muscle_score[["EMA_fatigue"]] = 0
 
         for index, row in self.history.iterrows():  # loop through history records
@@ -289,27 +289,27 @@ class Engine():
                     # if index2 == 14:
                     #     print(date_diff, deviation_score, EMA_score_deviation)
 
-                    self.muscle_score.loc[index2, ["Sets_per_week"]] += EMA_score_deviation * 3 * 7
+                    self.muscle_score.loc[index2, ['Sets_per_week']] += EMA_score_deviation * 3 * 7
                     self.muscle_score.loc[index2, ["EMA_fatigue"]] += max(0, EMA_score_fatigue)  # Ensure non-negative
-            # print(round(self.muscle_score.loc[14, ["Sets_per_week"]][0],2), row["Date"], date_diff)
+            # print(round(self.muscle_score.loc[14, ['Sets_per_week']][0],2), row["Date"], date_diff)
 
     def muscle_target_calc(self, eod=False):
         if eod:
-            self.muscle_score["Sets_per_week"] *= 0.9
+            self.muscle_score['Sets_per_week'] *= 0.9
             self.EMA_CALORIES *= 0.9
 
-        avg_ema_sets_per_week = self.muscle_score["Sets_per_week"].mean()  # Calculate the current average EMA sets per week
+        avg_ema_sets_per_week = self.muscle_score['Sets_per_week'].mean()  # Calculate the current average EMA sets per week
         total_priority = self.muscle_targets_data["Priority"].sum()  # Calculate the total priority sum
 
         # Calculate the target for each muscle based on its priority
         self.muscle_score["Target"] = (self.muscle_targets_data["Priority"] / total_priority) * avg_ema_sets_per_week * len(self.muscle_targets_data)
 
         # Calculate deviation as the absolute difference between Target and actual Sets_per_week
-        self.muscle_score["Deviation"] = self.muscle_score["Sets_per_week"] - self.muscle_score["Target"]
+        self.muscle_score["Deviation"] = self.muscle_score['Sets_per_week'] - self.muscle_score["Target"]
 
         # Debug statement to print Sets_per_week, Target, and Deviation
         # print("Muscle Score Debug:")
-        # print(self.muscle_score[["Muscle", "Sets_per_week", "Target", "Deviation"]])
+        # print(self.muscle_score[["Muscle", 'Sets_per_week', "Target", "Deviation"]])
 
     def new_deviation_calc(self, exercise_ID=None):
         ## Calculate projected deviation scores for each exercise
@@ -346,7 +346,7 @@ class Engine():
 
             # Debug statement to print Sets_per_week, Target, and Deviation
             # print(f"Muscle Deviation Calc Debug for {self.decode(str(exercise_ID))}")
-            # print(self.muscle_score[["Muscle", "Sets_per_week", "Target", "Deviation_change", "Projected_Sets_per_week", "Projected_Target", "New_deviation"]])
+            # print(self.muscle_score[["Muscle", 'Sets_per_week', "Target", "Deviation_change", "Projected_Sets_per_week", "Projected_Target", "New_deviation"]])
 
     def overall_scores_calc(self):
         ## calculate overall scores for each exercise
@@ -528,7 +528,7 @@ class Engine():
             except ValueError:
                 continue
             score = float(score)
-            self.muscle_score.loc[index2, ["Sets_per_week"]] += 0.1 * score * 3 * 7
+            self.muscle_score.loc[index2, ['Sets_per_week']] += 0.1 * score * 3 * 7
             self.muscle_score.loc[index2, ["Workout_fatigue"]] += score
 
         # reset temp fatigue and update duration and EMA calories (if cardio)
@@ -597,22 +597,22 @@ class Engine():
             if "stats" in options:
                 print("------Starting Stats------")
                 print(f"EMA lift ratio: {round(self.EMA_LIFT_RATIO, 2)}, Lift probability today: {round(self.lift_probability, 2)}")
-                print(f"Old avg. sets/week/muscle:\t\t{round(self.muscle_score["Sets_per_week"].mean(), 1)} ({round(self.muscle_score["Sets_per_week"].mean() / 10 * 100)} % of optimal)")
+                print(f"Old avg. sets/week/muscle:\t\t{round(self.muscle_score['Sets_per_week'].mean(), 1)} ({round(self.muscle_score['Sets_per_week'].mean() / 10 * 100)} % of optimal)")
                 print(f"Old avg. calories/week:\t\t\t{round(self.EMA_CALORIES * 7)} ({round(self.EMA_CALORIES * 7 / 2000 * 100)} % of optimal)")
-                print(f"Old avg. disproportion sets:\t{round((self.muscle_score["Deviation"] ** 2).mean() ** 0.5, 1)} ({100 - round((self.muscle_score["Deviation"] ** 2).mean() ** 0.5 / self.muscle_score["Sets_per_week"].mean() * 100)} % of optimal)")
+                print(f"Old avg. disproportion sets:\t{round((self.muscle_score['Deviation'] ** 2).mean() ** 0.5, 1)} ({100 - round((self.muscle_score['Deviation'] ** 2).mean() ** 0.5 / self.muscle_score['Sets_per_week'].mean() * 100)} % of optimal)")
             if "muscles" in options and i == 0:
-                print(self.muscle_score[["Muscle", "Workout_fatigue", "EMA_fatigue", "Sets_per_week", "Target", "Deviation"]])
+                print(self.muscle_score[["Muscle", "Workout_fatigue", "EMA_fatigue", 'Sets_per_week', "Target", "Deviation"]])
             print("------Generated Workout------")
             self.generate_workout(self.TODAY, "extras" in options)
             self.muscle_target_calc(eod=True)
             if "stats" in options:
                 print("------Updated Stats------")
-                print(f"New avg. sets/week/muscle:\t\t{round(self.muscle_score["Sets_per_week"].mean(), 1)} ({round(self.muscle_score["Sets_per_week"].mean() / 10 * 100)} % of optimal)")
+                print(f"New avg. sets/week/muscle:\t\t{round(self.muscle_score['Sets_per_week'].mean(), 1)} ({round(self.muscle_score['Sets_per_week'].mean() / 10 * 100)} % of optimal)")
                 print(f"New avg. calories/week:\t\t\t{round(self.EMA_CALORIES * 7)} ({round(self.EMA_CALORIES * 7 / 2000 * 100)} % of optimal)")
                 print(
-                    f"New avg. disproportion sets:\t{round((self.muscle_score["Deviation"] ** 2).mean() ** 0.5, 1)} ({100 - round((self.muscle_score["Deviation"] ** 2).mean() ** 0.5 / self.muscle_score["Sets_per_week"].mean() * 100)} % of optimal)")
+                    f"New avg. disproportion sets:\t{round((self.muscle_score['Deviation'] ** 2).mean() ** 0.5, 1)} ({100 - round((self.muscle_score['Deviation'] ** 2).mean() ** 0.5 / self.muscle_score['Sets_per_week'].mean() * 100)} % of optimal)")
             if "muscles" in options:
-                print(self.muscle_score[["Muscle", "Workout_fatigue", "EMA_fatigue", "Sets_per_week", "Target", "Deviation"]])
+                print(self.muscle_score[["Muscle", "Workout_fatigue", "EMA_fatigue", 'Sets_per_week', "Target", "Deviation"]])
 
             self.TODAY += dt.timedelta(days=1)
 
@@ -624,4 +624,4 @@ if __name__ == "__main__":
     options.append("extras")
     # options.append("exercises")
     options.append("muscles")
-    x.forecast(0, 1, options)
+    x.forecast(1, 1, options)
