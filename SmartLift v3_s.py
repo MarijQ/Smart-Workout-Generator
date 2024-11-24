@@ -46,9 +46,9 @@ class Engine():
         self.IS_HOME = True               # Toggle for home exercises
 
     def set_up(self):
-        self.history = pd.read_csv("inputs/history_s.csv")
-        self.exercises_data = pd.read_csv("inputs/exercises_s.csv")
-        self.muscle_targets_data = pd.read_csv("inputs/muscle_targets_s.csv")
+        self.history = pd.read_csv("archive/history_s.csv")
+        self.exercises_data = pd.read_csv("archive/exercises_s.csv")
+        self.muscle_targets_data = pd.read_csv("archive/muscle_targets_s.csv")
         # set up dataframes
         self.exercise_score = self.exercises_data.loc[self.exercises_data["Active"] == 1, ["ID", "Exercise", "Type", "Unilateral", "Fitness", "Flexibility", "Compoundness", "Duration", "Home"]]
         if self.IS_HOME:
@@ -368,7 +368,7 @@ class Engine():
 
     def write_to_file(self, date):
         try:
-            with open("inputs/history_s.csv", "a", newline='') as my_csv:
+            with open("archive/history_s.csv", "a", newline='') as my_csv:
                 csvWriter = csv.writer(my_csv, delimiter=',')
                 row = [date] + self.PIPELINE
                 csvWriter.writerow(row)

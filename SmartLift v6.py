@@ -66,7 +66,7 @@ class Engine():
             self.COMFORT_FACTOR_C = 0  # prioritise less fatiguing exercises to minimise overall exhaustion (significantly less optimal)
 
         else:
-            self.MUSCLE_FATIGUE_LIMIT = 1  # How frequently you can use the same muscle: e.g. 1 = Heavy biceps workout every 2 days, 0.5 = Heavy biceps workout every 4 days (2/x)
+            self.MUSCLE_FATIGUE_LIMIT = 0.7  # How frequently you can use the same muscle: e.g. 1 = Heavy biceps workout every 2 days, 0.5 = Heavy biceps workout every 4 days (2/x)
             self.TARGET_LIFT_RATIO = 0.7  # Target proportion of workout duration for lifts - e.g. 0.7 for strength focus, 0.3 for cardio focus
             self.TARGET_DURATION = 35  # Total exercise duration in minutes
             self.IS_HOME = False  # Toggle for home exercises
@@ -77,26 +77,34 @@ class Engine():
             # lifts
             self.GROWTH_FACTOR = 1  # growing as much total muscle as possible, anywhere on the body (optimal)
             self.PROPORTIONS_FACTOR = 1  # prioritise neglected muscles according to muscle_targets preferences (slightly less optimal)
-            self.SYMMETRY_FACTOR = 0.5  # prioritise single-limb exercises fixing asymmetry (moderately less optimal)
-            self.VARIETY_FACTOR = 0.5  # prioritise exercises you haven't done recently to mix things up (moderately less optimal)
-            self.FAVOURITES_FACTOR = 0  # prioritise user-defined favourites e.g. to train for competitions (moderately less optimal)
+            self.SYMMETRY_FACTOR = 0  # prioritise single-limb exercises fixing asymmetry (moderately less optimal)
+            self.VARIETY_FACTOR = 0.25  # prioritise exercises you haven't done recently to mix things up (moderately less optimal)
+            self.FAVOURITES_FACTOR = 0.25  # prioritise user-defined favourites e.g. to train for competitions (depends)
             self.COMFORT_FACTOR = 0  # prioritise less fatiguing exercises to minimise overall exhaustion (significantly less optimal)
 
             # cardio
-            self.CALORIES_FACTOR = 1  # prioritise burning the most calories (optimal)
-            self.VARIETY_FACTOR_C = 0.5  # prioritise exercises you haven't done recently to mix things up (moderately less optimal)
+            self.CALORIES_FACTOR = 0  # prioritise burning the most calories (optimal)
+            self.VARIETY_FACTOR_C = 1  # prioritise exercises you haven't done recently to mix things up (moderately less optimal)
             self.FAVOURITES_FACTOR_C = 0  # prioritise user-defined favourites e.g. to train for competitions (moderately less optimal)
             self.COMFORT_FACTOR_C = 0  # prioritise less fatiguing exercises to minimise overall exhaustion (significantly less optimal)
 
     def set_up(self):
         suffix = "_s" if self.SUNNY else ""
-        self.history = pd.read_excel(f"inputs/history{suffix}.xlsx", sheet_name="history")
-        self.exercises_data = pd.read_excel(f"inputs/exercises{suffix}.xlsx", sheet_name="exercises", skiprows=1)
-        self.muscle_targets_data = pd.read_excel(f"inputs/muscle_targets{suffix}.xlsx", sheet_name="muscle_targets")
-        # set up dataframes
-        self.exercise_score = self.exercises_data.loc[self.exercises_data["Active"] >= 1, ["ID", "Exercise", "Type", "Active", "Unilateral", "Calories", "Fatigue", "Growth", "Duration", "Home"]]
+        # Update to read .ods instead of .xlsx
+        self.history = pd.read_excel(f"inputs/history{suffix}.ods", engine="odf", sheet_name="history")
+        self.exercises_data = pd.read_excel(f"inputs/exercises{suffix}.ods", engine="odf", sheet_name="exercises",
+                                            skiprows=1)
+        self.muscle_targets_data = pd.read_excel(f"inputs/muscle_targets{suffix}.ods", engine="odf",
+                                                 sheet_name="muscle_targets")
+
+        # Set up dataframes similar to before
+        self.exercise_score = self.exercises_data.loc[
+            self.exercises_data["Active"] >= 1, ["ID", "Exercise", "Type", "Active", "Unilateral", "Calories",
+                                                 "Fatigue", "Growth", "Duration", "Home"]]
+
         if self.IS_HOME:
             self.exercise_score = self.exercise_score[self.exercise_score["Home"] == 1]
+
         self.exercise_score[["Freshness"]] = 0
         self.muscle_score = pd.DataFrame(list(self.exercises_data.columns[12:32]), columns=["Muscle"])
         self.muscle_score[["Sets_per_week"]] = 0.0  # Initialize as float
@@ -104,6 +112,7 @@ class Engine():
         self.muscle_score[["Temp_fatigue"]] = 0.0  # Initialize as float
         self.muscle_score[["EMA_fatigue"]] = 0.0  # Initialize as float
         self.PIPELINE = []
+
         # Convert types (in case they aren't already float)
         self.muscle_score["Sets_per_week"] = self.muscle_score["Sets_per_week"].astype(float)
         self.muscle_score["Workout_fatigue"] = self.muscle_score["Workout_fatigue"].astype(float)
@@ -158,9 +167,9 @@ class Engine():
         # Convert 'Date' back to string format with new format
         self.history['Date'] = self.history['Date'].apply(lambda x: x.strftime('%d/%m/%y'))
 
-        # Save the updated history to Excel
+        # Save the updated history to .ods
         suffix = "_s" if self.SUNNY else ""
-        with pd.ExcelWriter(f"inputs/history{suffix}.xlsx", engine='openpyxl') as writer:
+        with pd.ExcelWriter(f"inputs/history{suffix}.ods", engine='odf') as writer:
             self.history.to_excel(writer, sheet_name="history", index=False)
 
     def update_history_with_names(self):
@@ -168,15 +177,17 @@ class Engine():
         exercise_dict = pd.Series(self.exercises_data['Exercise'].values, index=self.exercises_data['ID']).to_dict()
 
         # Get the exercise columns
-        columns = self.history.columns[1:11]  # Assuming the first column is 'Date' and next 10 are Exercise_1 to Exercise_10
+        columns = self.history.columns[
+                  1:11]  # Assuming the first column is 'Date' and the next 10 are Exercise_1 to Exercise_10
 
         # Add new columns for exercise names
         for i in range(1, 11):
-            self.history[f'Name_{i}'] = self.history.apply(lambda row: exercise_dict.get(self.safe_convert_to_int(row[columns[i - 1]]), ''), axis=1)
+            self.history[f'Name_{i}'] = self.history.apply(
+                lambda row: exercise_dict.get(self.safe_convert_to_int(row[columns[i - 1]]), ''), axis=1)
 
-        # Save the updated history to Excel
+        # Save the updated history to Excel (ODS format)
         suffix = "_s" if self.SUNNY else ""
-        with pd.ExcelWriter(f"inputs/history{suffix}.xlsx", engine='openpyxl') as writer:
+        with pd.ExcelWriter(f"inputs/history{suffix}.ods", engine='odf') as writer:
             self.history.to_excel(writer, sheet_name="history", index=False)
 
     def write_to_file(self, date):
@@ -407,46 +418,53 @@ class Engine():
         # Initialise
         self.exercise_score_init = self.exercise_score.copy()
         self.remaining_duration = self.TARGET_DURATION
-        # Track the first words of selected exercises
         self.selected_first_words = set()
+
+        # Expected cardio workout time calculation
+        expected_cardio_time = (1 - self.lift_probability) * self.TARGET_DURATION
 
         # Generate as many exercises as possible until the duration cap is reached
         seeds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         while self.remaining_duration >= 7:  # Assuming minimum exercise duration is 7 minutes
             self.exercise_score = self.exercise_score_init.copy()
-            # Refresh projected scores for exercises
             self.muscle_target_calc()
             self.new_deviation_calc()
-            # print(self.exercise_score[["Exercise", "Freshness", "Deviation_change", "Score"]])
             self.overall_scores_calc()
 
-            seeds.pop(0)
-            # Convert date to an integer seed based on timestamp
             date_time = dt.datetime.combine(date, dt.datetime.min.time())
             timestamp = int(date_time.timestamp())
-            seed_value = timestamp + seeds[0] * 3600  # Adding hours to ensure distinct values at the hour level
+            seed_value = timestamp + seeds[0] * 3600  # Adding hours for distinct values
             rd.seed(seed_value)
+            seeds.pop(0)
 
-            # Filter for the specified exercise type
             if rd.random() < self.lift_probability:
                 self.exercise_score = self.exercise_score[self.exercise_score["Type"] != "Cardio"]
+                reduce_cardio_prob = False
             else:
                 self.exercise_score = self.exercise_score[self.exercise_score["Type"] == "Cardio"]
+                reduce_cardio_prob = True
+
             if self.exercise_score.empty:
                 print("No more suitable exercises!")
                 break
-            # Select the top exercise
+
             selected = self.select_top_exercise()
             if not selected:
                 break
 
-        # Add the new row to the history DataFrame
-        new_row = pd.DataFrame([[date.strftime('%d/%m/%y')] + self.PIPELINE], columns=self.history.columns[:len([date] + self.PIPELINE)])
+            # If a cardio exercise is selected, adjust lift_probability
+            if reduce_cardio_prob:
+                selected_exercise_id = int(self.PIPELINE[-1])
+                selected_row = self.exercises_data[self.exercises_data["ID"] == selected_exercise_id]
+                selected_duration = selected_row["Duration"].values[0]
+                self.lift_probability = min(1, self.lift_probability + selected_duration / expected_cardio_time)
+
+        new_row = pd.DataFrame([[date.strftime('%d/%m/%y')] + self.PIPELINE],
+                               columns=self.history.columns[:len([date] + self.PIPELINE)])
         self.history = pd.concat([self.history, new_row], ignore_index=True)
 
-        # Write the updated history to the file
         suffix = "_s" if self.SUNNY else ""
-        with pd.ExcelWriter(f"inputs/history{suffix}.xlsx", engine='openpyxl') as writer:
+        with pd.ExcelWriter(f"inputs/history{suffix}.ods", engine='odf') as writer:
             self.history.to_excel(writer, sheet_name="history", index=False)
 
         if extras:
@@ -522,7 +540,7 @@ class Engine():
         # Write to list and remove from exercises
         self.PIPELINE.append(str(int(exercise_ID)))
         self.exercise_score_init.drop([exercise_index], inplace=True)
-        print("Selected", int(exercise_ID), row["Exercise"].iloc[0], "(", duration, "mins )")
+        print("Selected", int(exercise_ID), row["Exercise"].iloc[0], "(", int(duration), "mins )")
 
         # Add the first word to the set of selected first words
         self.selected_first_words.add(first_word)
@@ -538,7 +556,7 @@ class Engine():
         top_exercises = filtered_exercises.sort_values(by="Score", ascending=False).head(count)
 
         for index, row in top_exercises.iterrows():
-            print("Extra option:", row["ID"], row["Exercise"], "(", row["Duration"], "mins )")
+            print("Extra option:", int(row["ID"]), row["Exercise"], "(", int(row["Duration"]), "mins )")
 
     # -------------------- Utility Functions --------------------
 
@@ -605,5 +623,5 @@ if __name__ == "__main__":
     options.append("stats")
     options.append("extras")
     # options.append("exercises")
-    # options.append("muscles")
-    x.forecast(1, 1, options)
+    options.append("muscles")
+    x.forecast(0, 1, options)
