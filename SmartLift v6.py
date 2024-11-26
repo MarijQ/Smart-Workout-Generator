@@ -601,7 +601,7 @@ class Engine():
                 print(f"Old avg. calories/week:\t\t\t{round(self.EMA_CALORIES * 7)} ({round(self.EMA_CALORIES * 7 / 2000 * 100)} % of optimal)")
                 print(f"Old avg. disproportion sets:\t{round((self.muscle_score['Deviation'] ** 2).mean() ** 0.5, 1)} ({100 - round((self.muscle_score['Deviation'] ** 2).mean() ** 0.5 / self.muscle_score['Sets_per_week'].mean() * 100)} % of optimal)")
             if "muscles" in options and i == 0:
-                print(self.muscle_score[["Muscle", "Workout_fatigue", "EMA_fatigue", 'Sets_per_week', "Target", "Deviation"]])
+                print(self.muscle_score[["Muscle", "Workout_fatigue", "EMA_fatigue", 'Sets_per_week', "Target", "Deviation"]].sort_values(by="Deviation", ascending=True))
             print("------Generated Workout------")
             self.generate_workout(self.TODAY, "extras" in options)
             self.muscle_target_calc(eod=True)
@@ -612,7 +612,7 @@ class Engine():
                 print(
                     f"New avg. disproportion sets:\t{round((self.muscle_score['Deviation'] ** 2).mean() ** 0.5, 1)} ({100 - round((self.muscle_score['Deviation'] ** 2).mean() ** 0.5 / self.muscle_score['Sets_per_week'].mean() * 100)} % of optimal)")
             if "muscles" in options:
-                print(self.muscle_score[["Muscle", "Workout_fatigue", "EMA_fatigue", 'Sets_per_week', "Target", "Deviation"]])
+                print(self.muscle_score[["Muscle", "Workout_fatigue", "EMA_fatigue", 'Sets_per_week', "Target", "Deviation"]].sort_values(by="Deviation", ascending=True))
 
             self.TODAY += dt.timedelta(days=1)
 
