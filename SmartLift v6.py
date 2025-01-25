@@ -117,16 +117,16 @@ class Engine:
         suffix = "_s" if self.SUNNY else ""
         # Update to read .ods instead of .xlsx
         self.history = pd.read_excel(
-            f"inputs/history{suffix}.ods", engine="odf", sheet_name="history"
+            f"Smartlift-[GH]/inputs/history{suffix}.ods", engine="odf", sheet_name="history"
         )
         self.exercises_data = pd.read_excel(
-            f"inputs/exercises{suffix}.ods",
+            f"Smartlift-[GH]/inputs/exercises{suffix}.ods",
             engine="odf",
             sheet_name="exercises",
             skiprows=1,
         )
         self.muscle_targets_data = pd.read_excel(
-            f"inputs/muscle_targets{suffix}.ods",
+            f"Smartlift-[GH]/inputs/muscle_targets{suffix}.ods",
             engine="odf",
             sheet_name="muscle_targets",
         )
@@ -235,7 +235,7 @@ class Engine:
 
         # Save the updated history to .ods
         suffix = "_s" if self.SUNNY else ""
-        with pd.ExcelWriter(f"inputs/history{suffix}.ods", engine="odf") as writer:
+        with pd.ExcelWriter(f"Smartlift-[GH]/inputs/history{suffix}.ods", engine="odf") as writer:
             self.history.to_excel(writer, sheet_name="history", index=False)
 
     def update_history_with_names(self):
@@ -260,12 +260,12 @@ class Engine:
 
         # Save the updated history to Excel (ODS format)
         suffix = "_s" if self.SUNNY else ""
-        with pd.ExcelWriter(f"inputs/history{suffix}.ods", engine="odf") as writer:
+        with pd.ExcelWriter(f"Smartlift-[GH]/inputs/history{suffix}.ods", engine="odf") as writer:
             self.history.to_excel(writer, sheet_name="history", index=False)
 
     def write_to_file(self, date):
         try:
-            with open("inputs/history.csv", "a", newline="") as my_csv:
+            with open("Smartlift-[GH]/inputs/history.csv", "a", newline="") as my_csv:
                 csvWriter = csv.writer(my_csv, delimiter=",")
                 row = [date] + self.PIPELINE
                 csvWriter.writerow(row)
@@ -666,7 +666,7 @@ class Engine:
         self.history = pd.concat([self.history, new_row], ignore_index=True)
 
         suffix = "_s" if self.SUNNY else ""
-        with pd.ExcelWriter(f"inputs/history{suffix}.ods", engine="odf") as writer:
+        with pd.ExcelWriter(f"Smartlift-[GH]/inputs/history{suffix}.ods", engine="odf") as writer:
             self.history.to_excel(writer, sheet_name="history", index=False)
 
         if extras:
