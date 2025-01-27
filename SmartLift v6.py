@@ -91,7 +91,7 @@ class Engine:
 
             # lifts
             # growing as much total muscle as possible, anywhere on the body (optimal)
-            self.GROWTH_FACTOR = 1
+            self.GROWTH_FACTOR = 0.5
             # prioritise neglected muscles according to muscle_targets preferences (slightly less optimal)
             self.PROPORTIONS_FACTOR = 1
             # prioritise single-limb exercises fixing asymmetry (moderately less optimal)
