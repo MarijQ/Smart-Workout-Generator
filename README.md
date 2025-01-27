@@ -1,7 +1,7 @@
-# SmartLift: Intelligent Workout Planner
+# Smart Workout Generator
 
 ## Overview
-**SmartLift** is a Python-based fitness application designed to create customised workout plans tailored to individual goals, preferences, and physical conditions. It focuses on balancing muscle fatigue, workout variation, and proportional muscle training through adaptive algorithms, ensuring efficient progress while minimising the risk of overtraining.
+This is a Python-based fitness application designed to create customised workout plans tailored to individual goals, preferences, and physical conditions. It focuses on balancing muscle fatigue, workout variation, and proportional muscle training through adaptive algorithms, ensuring efficient progress while minimising the risk of overtraining.
 
 ## Features
 - **Dynamic Workout Planning**: Generates personalised lifting and cardio plans based on a user's current muscle fatigue and historical workout data.
