@@ -907,4 +907,4 @@ if __name__ == "__main__":
     options.append("extras")
     # options.append("exercises")
     options.append("muscles")
-    x.forecast(0, 1, options)
+    x.forecast(1, 1, options)
