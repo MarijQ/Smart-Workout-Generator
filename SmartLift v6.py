@@ -759,7 +759,7 @@ class Engine:
         if row["Type"].iloc[0] == "Cardio":
             self.EMA_CALORIES += 0.1 * row["Calories"].iloc[0]
 
-        # Write to list and remove from exercises
+        # Write to list and remove from exercises 
         self.PIPELINE.append(str(int(exercise_ID)))
         self.exercise_score_init.drop([exercise_index], inplace=True)
         print(
@@ -907,4 +907,4 @@ if __name__ == "__main__":
     options.append("extras")
     # options.append("exercises")
     options.append("muscles")
-    x.forecast(1, 1, options)
+    x.forecast(0, 1, options)
