@@ -47,7 +47,7 @@ class Engine:
             # Target proportion of workout duration for lifts - e.g. 0.7 for strength focus, 0.3 for cardio focus
             self.TARGET_LIFT_RATIO = 0.7
             # Total exercise duration in minutes (weekends)
-            self.TARGET_DURATION = 35
+            self.TARGET_DURATION = 45
             self.WEEKDAY_TARGET_DURATION = 20  # Custom total duration for weekdays
             self.IS_HOME = False  # Toggle for home exercises
 
@@ -80,10 +80,10 @@ class Engine:
 
         else:
             # How frequently you can use the same muscle: e.g. 1 = Heavy biceps workout every 2 days, 0.5 = Heavy biceps workout every 4 days (2/x)
-            self.MUSCLE_FATIGUE_LIMIT = 0.7
+            self.MUSCLE_FATIGUE_LIMIT = 0.5
             # Target proportion of workout duration for lifts - e.g. 0.7 for strength focus, 0.3 for cardio focus
             self.TARGET_LIFT_RATIO = 0.7
-            self.TARGET_DURATION = 35  # Total exercise duration in minutes
+            self.TARGET_DURATION = 45  # Total exercise duration in minutes
             self.IS_HOME = False  # Toggle for home exercises
 
             # Select user priorities (score of X means that top exercise is 2^X times more likely to be picked)
@@ -95,7 +95,7 @@ class Engine:
             # prioritise neglected muscles according to muscle_targets preferences (slightly less optimal)
             self.PROPORTIONS_FACTOR = 1
             # prioritise single-limb exercises fixing asymmetry (moderately less optimal)
-            self.SYMMETRY_FACTOR = 0
+            self.SYMMETRY_FACTOR = 0.5
             # prioritise exercises you haven't done recently to mix things up (moderately less optimal)
             self.VARIETY_FACTOR = 0.25
             # prioritise user-defined favourites e.g. to train for competitions (depends)
