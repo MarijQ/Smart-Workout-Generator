@@ -1,0 +1,8 @@
+{
+  "name": "Alice",
+  "age": 30,
+  "gender": "F",
+  "preferences": {
+    "goal": "hypertrophy"
+  }
+}

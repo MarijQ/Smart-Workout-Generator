@@ -1,0 +1,12 @@
+[
+  {
+    "name": "Push-up",
+    "primary_muscles": [
+      "Pecs"
+    ],
+    "secondary_muscles": [],
+    "exercise_type": "strength",
+    "equipment": [],
+    "base_fatigue_score": 1.1
+  }
+]
