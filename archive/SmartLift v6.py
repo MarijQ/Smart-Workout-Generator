@@ -83,7 +83,7 @@ class Engine:
             self.MUSCLE_FATIGUE_LIMIT = 0.7
             # Target proportion of workout duration for lifts - e.g. 0.7 for strength focus, 0.3 for cardio focus
             self.TARGET_LIFT_RATIO = 0.7
-            self.TARGET_DURATION = 45  # Total exercise duration in minutes
+            self.TARGET_DURATION = 30  # Total exercise duration in minutes
             self.IS_HOME = False  # Toggle for home exercises
 
             # Select user priorities (score of X means that top exercise is 2^X times more likely to be picked)

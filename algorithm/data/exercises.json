@@ -1,0 +1,619 @@
+[
+    {
+        "name": "Dumbbell Incline Curl (single)",
+        "primary_muscles": ["Biceps"],
+        "secondary_muscles": ["Forearms"],
+        "exercise_type": "strength",
+        "equipment": ["dumbbell", "incline bench"],
+        "base_fatigue_score": 0.7
+    },
+    {
+        "name": "Chin-up",
+        "primary_muscles": ["Lats", "Biceps"],
+        "secondary_muscles": ["Forearms", "Rhomboids", "Rear delts", "Deep abs"],
+        "exercise_type": "strength",
+        "equipment": ["pull-up bar"],
+        "base_fatigue_score": 1.6
+    },
+    {
+        "name": "Overhead press",
+        "primary_muscles": ["Front delts", "Side delts"],
+        "secondary_muscles": ["Triceps", "Traps", "Deep abs"],
+        "exercise_type": "strength",
+        "equipment": ["barbell"],
+        "base_fatigue_score": 1.5
+    },
+    {
+        "name": "Bench press",
+        "primary_muscles": ["Pecs"],
+        "secondary_muscles": ["Front delts", "Triceps"],
+        "exercise_type": "strength",
+        "equipment": ["barbell", "bench"],
+        "base_fatigue_score": 1.6
+    },
+    {
+        "name": "Rowing",
+        "primary_muscles": ["Lats", "Quads", "Hamstrings", "Rhomboids"],
+        "secondary_muscles": ["Biceps", "Forearms", "Lower back", "Traps", "Glutes", "Deep abs"],
+        "exercise_type": "cardio",
+        "equipment": ["rowing machine"],
+        "base_fatigue_score": 1.2
+    },
+    {
+        "name": "Treadmill",
+        "primary_muscles": ["Quads", "Hamstrings", "Calves"],
+        "secondary_muscles": ["Glutes"],
+        "exercise_type": "cardio",
+        "equipment": ["treadmill"],
+        "base_fatigue_score": 1.0
+    },
+    {
+        "name": "Deadlift",
+        "primary_muscles": ["Hamstrings", "Glutes", "Lower back"],
+        "secondary_muscles": ["Quads", "Traps", "Forearms", "Lats", "Deep abs"],
+        "exercise_type": "strength",
+        "equipment": ["barbell"],
+        "base_fatigue_score": 2.2
+    },
+    {
+        "name": "Squat",
+        "primary_muscles": ["Quads", "Glutes"],
+        "secondary_muscles": ["Hamstrings", "Adductors", "Lower back", "Deep abs", "Calves"],
+        "exercise_type": "strength",
+        "equipment": ["barbell", "squat rack"],
+        "base_fatigue_score": 2.0
+    },
+    {
+        "name": "Leg Press",
+        "primary_muscles": ["Quads", "Glutes"],
+        "secondary_muscles": ["Hamstrings", "Adductors", "Calves"],
+        "exercise_type": "strength",
+        "equipment": ["leg press machine"],
+        "base_fatigue_score": 1.8
+    },
+    {
+        "name": "Cable Reverse Fly (single)",
+        "primary_muscles": ["Rear delts"],
+        "secondary_muscles": ["Traps", "Rhomboids"],
+        "exercise_type": "strength",
+        "equipment": ["cable machine"],
+        "base_fatigue_score": 0.6
+    },
+    {
+        "name": "Sit-up (Head)",
+        "primary_muscles": ["Front abs"],
+        "secondary_muscles": ["Deep abs", "Obliques"],
+        "exercise_type": "strength",
+        "equipment": ["none"],
+        "base_fatigue_score": 0.5
+    },
+    {
+        "name": "Bent-over row",
+        "primary_muscles": ["Lats", "Traps", "Rhomboids"],
+        "secondary_muscles": ["Biceps", "Forearms", "Rear delts", "Lower back", "Deep abs"],
+        "exercise_type": "strength",
+        "equipment": ["barbell"],
+        "base_fatigue_score": 1.7
+    },
+    {
+        "name": "Cycling",
+        "primary_muscles": ["Quads", "Hamstrings"],
+        "secondary_muscles": ["Glutes", "Calves"],
+        "exercise_type": "cardio",
+        "equipment": ["stationary bike", "bicycle"],
+        "base_fatigue_score": 0.9
+    },
+    {
+        "name": "Seated Leg Curl",
+        "primary_muscles": ["Hamstrings"],
+        "secondary_muscles": ["Calves"],
+        "exercise_type": "strength",
+        "equipment": ["leg curl machine"],
+        "base_fatigue_score": 0.8
+    },
+    {
+        "name": "Stair Machine",
+        "primary_muscles": ["Quads", "Glutes", "Calves"],
+        "secondary_muscles": ["Hamstrings"],
+        "exercise_type": "cardio",
+        "equipment": ["stair machine"],
+        "base_fatigue_score": 1.1
+    },
+    {
+        "name": "Plank",
+        "primary_muscles": ["Deep abs", "Front abs"],
+        "secondary_muscles": ["Lower back", "Glutes", "Front delts", "Quads"],
+        "exercise_type": "strength",
+        "equipment": ["none"],
+        "base_fatigue_score": 0.7
+    },
+    {
+        "name": "Dumbbell Bench Press",
+        "primary_muscles": ["Pecs"],
+        "secondary_muscles": ["Front delts", "Triceps"],
+        "exercise_type": "strength",
+        "equipment": ["dumbbell", "bench"],
+        "base_fatigue_score": 1.5
+    },
+    {
+        "name": "Cable lateral raise (single)",
+        "primary_muscles": ["Side delts"],
+        "secondary_muscles": ["Traps"],
+        "exercise_type": "strength",
+        "equipment": ["cable machine"],
+        "base_fatigue_score": 0.6
+    },
+    {
+        "name": "Cable Hip Adduction",
+        "primary_muscles": ["Adductors"],
+        "secondary_muscles": ["Glutes"],
+        "exercise_type": "strength",
+        "equipment": ["cable machine"],
+        "base_fatigue_score": 0.7
+    },
+    {
+        "name": "Dumbbell Shoulder Press (side)",
+        "primary_muscles": ["Side delts", "Front delts"],
+        "secondary_muscles": ["Triceps", "Traps", "Deep abs"],
+        "exercise_type": "strength",
+        "equipment": ["dumbbell"],
+        "base_fatigue_score": 1.4 
+    },
+    {
+        "name": "Outdoor running",
+        "primary_muscles": ["Quads", "Hamstrings", "Calves"],
+        "secondary_muscles": ["Glutes"],
+        "exercise_type": "cardio",
+        "equipment": ["none"],
+        "base_fatigue_score": 1.0
+    },
+    {
+        "name": "Dumbbell row (single)",
+        "primary_muscles": ["Lats", "Traps", "Rhomboids"],
+        "secondary_muscles": ["Biceps", "Forearms", "Rear delts", "Lower back", "Obliques"],
+        "exercise_type": "strength",
+        "equipment": ["dumbbell", "bench"],
+        "base_fatigue_score": 1.3
+    },
+    {
+        "name": "Calf Press",
+        "primary_muscles": ["Calves"],
+        "secondary_muscles": [],
+        "exercise_type": "strength",
+        "equipment": ["leg press machine", "calf press machine"],
+        "base_fatigue_score": 0.7
+    },
+    {
+        "name": "Cable Standing Twist",
+        "primary_muscles": ["Obliques"],
+        "secondary_muscles": ["Front abs", "Deep abs"],
+        "exercise_type": "strength",
+        "equipment": ["cable machine"],
+        "base_fatigue_score": 0.6
+    },
+    {
+        "name": "Cable Lat Pulldown (Wide Grip)",
+        "primary_muscles": ["Lats"],
+        "secondary_muscles": ["Biceps", "Forearms", "Traps", "Rhomboids", "Rear delts"],
+        "exercise_type": "strength",
+        "equipment": ["cable machine"],
+        "base_fatigue_score": 1.4
+    },
+    {
+        "name": "Machine Shoulder Press",
+        "primary_muscles": ["Front delts", "Side delts"],
+        "secondary_muscles": ["Triceps", "Traps"],
+        "exercise_type": "strength",
+        "equipment": ["shoulder press machine"],
+        "base_fatigue_score": 1.3
+    },
+    {
+        "name": "Cable Seated Row (narrow grip)",
+        "primary_muscles": ["Lats", "Rhomboids", "Traps"],
+        "secondary_muscles": ["Biceps", "Forearms", "Rear delts", "Lower back"],
+        "exercise_type": "strength",
+        "equipment": ["cable machine"],
+        "base_fatigue_score": 1.3
+    },
+    {
+        "name": "Seated Leg Extension",
+        "primary_muscles": ["Quads"],
+        "secondary_muscles": [],
+        "exercise_type": "strength",
+        "equipment": ["leg extension machine"],
+        "base_fatigue_score": 0.8
+    },
+    {
+        "name": "Dumbbell Walking Lunge",
+        "primary_muscles": ["Quads", "Glutes"],
+        "secondary_muscles": ["Hamstrings", "Adductors", "Calves", "Deep abs"],
+        "exercise_type": "strength",
+        "equipment": ["dumbbell"],
+        "base_fatigue_score": 1.5
+    },
+    {
+        "name": "Barbell Hip Thrust",
+        "primary_muscles": ["Glutes"],
+        "secondary_muscles": ["Hamstrings", "Lower back", "Quads", "Deep abs"],
+        "exercise_type": "strength",
+        "equipment": ["barbell", "bench"],
+        "base_fatigue_score": 1.6
+    },
+    {
+        "name": "Dumbbell Incline Bench Press",
+        "primary_muscles": ["Pecs", "Front delts"],
+        "secondary_muscles": ["Triceps"],
+        "exercise_type": "strength",
+        "equipment": ["dumbbell", "incline bench"],
+        "base_fatigue_score": 1.4
+    },
+    {
+        "name": "Captain’s Chair",
+        "primary_muscles": ["Front abs", "Deep abs"],
+        "secondary_muscles": ["Obliques"],
+        "exercise_type": "strength",
+        "equipment": ["captain's chair"],
+        "base_fatigue_score": 0.8
+    },
+    {
+        "name": "Prone Leg Curl",
+        "primary_muscles": ["Hamstrings"],
+        "secondary_muscles": ["Calves", "Glutes"],
+        "exercise_type": "strength",
+        "equipment": ["leg curl machine"],
+        "base_fatigue_score": 0.8
+    },
+    {
+        "name": "Seated Calf Press",
+        "primary_muscles": ["Calves"],
+        "secondary_muscles": [],
+        "exercise_type": "strength",
+        "equipment": ["seated calf raise machine"],
+        "base_fatigue_score": 0.6
+    },
+    {
+        "name": "Bulgarian Split Squat",
+        "primary_muscles": ["Quads", "Glutes"],
+        "secondary_muscles": ["Hamstrings", "Adductors", "Deep abs"],
+        "exercise_type": "strength",
+        "equipment": ["dumbbell", "bench"],
+        "base_fatigue_score": 1.4
+    },
+    {
+        "name": "Hanging Leg Raise",
+        "primary_muscles": ["Front abs", "Deep abs"],
+        "secondary_muscles": ["Obliques", "Forearms"],
+        "exercise_type": "strength",
+        "equipment": ["pull-up bar", "dip station"],
+        "base_fatigue_score": 0.9
+    },
+    {
+        "name": "Skull Crusher",
+        "primary_muscles": ["Triceps"],
+        "secondary_muscles": ["Front delts"],
+        "exercise_type": "strength",
+        "equipment": ["ez bar", "barbell", "dumbbell", "bench"],
+        "base_fatigue_score": 0.9
+    },
+    {
+        "name": "Machine Lat Pull Down",
+        "primary_muscles": ["Lats"],
+        "secondary_muscles": ["Biceps", "Forearms", "Traps", "Rhomboids", "Rear delts"],
+        "exercise_type": "strength",
+        "equipment": ["lat pulldown machine"],
+        "base_fatigue_score": 1.4
+    },
+    {
+        "name": "Triceps Dip",
+        "primary_muscles": ["Triceps"],
+        "secondary_muscles": ["Pecs", "Front delts"],
+        "exercise_type": "strength",
+        "equipment": ["dip station"],
+        "base_fatigue_score": 1.3
+    },
+    {
+        "name": "Cable Face Pull",
+        "primary_muscles": ["Rear delts", "Traps", "Rhomboids"],
+        "secondary_muscles": ["Biceps"],
+        "exercise_type": "strength",
+        "equipment": ["cable machine"],
+        "base_fatigue_score": 0.8
+    },
+    {
+        "name": "EZ Bar Curl",
+        "primary_muscles": ["Biceps"],
+        "secondary_muscles": ["Forearms"],
+        "exercise_type": "strength",
+        "equipment": ["ez bar"],
+        "base_fatigue_score": 0.8
+    },
+    {
+        "name": "Seated Leg Curl (single)",
+        "primary_muscles": ["Hamstrings"],
+        "secondary_muscles": ["Calves"],
+        "exercise_type": "strength",
+        "equipment": ["leg curl machine"],
+        "base_fatigue_score": 0.7
+    },
+    {
+        "name": "Seated Leg Extension (single)",
+        "primary_muscles": ["Quads"],
+        "secondary_muscles": [],
+        "exercise_type": "strength",
+        "equipment": ["leg extension machine"],
+        "base_fatigue_score": 0.7
+    },
+    {
+        "name": "Cable Triceps Pushdown",
+        "primary_muscles": ["Triceps"],
+        "secondary_muscles": [],
+        "exercise_type": "strength",
+        "equipment": ["cable machine"],
+        "base_fatigue_score": 0.8
+    },
+    {
+        "name": "Bench Press Machine",
+        "primary_muscles": ["Pecs"],
+        "secondary_muscles": ["Front delts", "Triceps"],
+        "exercise_type": "strength",
+        "equipment": ["bench press machine"],
+        "base_fatigue_score": 1.4
+    },
+    {
+        "name": "Pull-Up",
+        "primary_muscles": ["Lats"],
+        "secondary_muscles": ["Biceps", "Forearms", "Traps", "Rhomboids", "Rear delts", "Deep abs"],
+        "exercise_type": "strength",
+        "equipment": ["pull-up bar"],
+        "base_fatigue_score": 1.7
+    },
+    {
+        "name": "Incline Bench Press",
+        "primary_muscles": ["Pecs", "Front delts"],
+        "secondary_muscles": ["Triceps"],
+        "exercise_type": "strength",
+        "equipment": ["barbell", "incline bench"],
+        "base_fatigue_score": 1.5
+    },
+    {
+        "name": "EZ Bar Preacher Curl",
+        "primary_muscles": ["Biceps"],
+        "secondary_muscles": ["Forearms"],
+        "exercise_type": "strength",
+        "equipment": ["ez bar", "preacher bench"],
+        "base_fatigue_score": 0.7
+    },
+    {
+        "name": "Dumbbell Shrug",
+        "primary_muscles": ["Traps"],
+        "secondary_muscles": ["Forearms"],
+        "exercise_type": "strength",
+        "equipment": ["dumbbell"],
+        "base_fatigue_score": 0.7
+    },
+    {
+        "name": "Machine Seated Row",
+        "primary_muscles": ["Lats", "Rhomboids", "Traps"],
+        "secondary_muscles": ["Biceps", "Forearms", "Rear delts", "Lower back"],
+        "exercise_type": "strength",
+        "equipment": ["seated row machine"],
+        "base_fatigue_score": 1.3
+    },
+    {
+        "name": "Sit-up (Chest)",
+        "primary_muscles": ["Front abs"],
+        "secondary_muscles": ["Deep abs", "Obliques"],
+        "exercise_type": "strength",
+        "equipment": ["none"],
+        "base_fatigue_score": 0.5
+    },
+    {
+        "name": "Calf Press (single)",
+        "primary_muscles": ["Calves"],
+        "secondary_muscles": [],
+        "exercise_type": "strength",
+        "equipment": ["leg press machine", "calf press machine"],
+        "base_fatigue_score": 0.6
+    },
+    {
+        "name": "Cable Pec Fly",
+        "primary_muscles": ["Pecs"],
+        "secondary_muscles": ["Front delts"],
+        "exercise_type": "strength",
+        "equipment": ["cable machine"],
+        "base_fatigue_score": 0.9
+    },
+    {
+        "name": "Cable Reverse Fly",
+        "primary_muscles": ["Rear delts"],
+        "secondary_muscles": ["Traps", "Rhomboids"],
+        "exercise_type": "strength",
+        "equipment": ["cable machine"],
+        "base_fatigue_score": 0.7
+    },
+    {
+        "name": "Cable Wood Chop",
+        "primary_muscles": ["Obliques"],
+        "secondary_muscles": ["Front abs", "Deep abs", "Front delts"],
+        "exercise_type": "strength",
+        "equipment": ["cable machine"],
+        "base_fatigue_score": 0.8
+    },
+    {
+        "name": "Dumbbell Shoulder Press (front)",
+        "primary_muscles": ["Front delts"],
+        "secondary_muscles": ["Side delts", "Triceps", "Traps", "Deep abs"],
+        "exercise_type": "strength",
+        "equipment": ["dumbbell"],
+        "base_fatigue_score": 1.3
+    },
+    {
+        "name": "Cable Shrug",
+        "primary_muscles": ["Traps"],
+        "secondary_muscles": ["Forearms"],
+        "exercise_type": "strength",
+        "equipment": ["cable machine"],
+        "base_fatigue_score": 0.7
+    },
+    {
+        "name": "Push-up",
+        "primary_muscles": ["Pecs", "Front delts", "Triceps"],
+        "secondary_muscles": ["Deep abs", "Front abs"],
+        "exercise_type": "strength",
+        "equipment": ["none"],
+        "base_fatigue_score": 1.1
+    },
+    {
+        "name": "Cable Hip Abduction",
+        "primary_muscles": ["Abductors"],
+        "secondary_muscles": ["Glutes"],
+        "exercise_type": "strength",
+        "equipment": ["cable machine"],
+        "base_fatigue_score": 0.7
+    },
+    {
+        "name": "Concentration Curl (single)",
+        "primary_muscles": ["Biceps"],
+        "secondary_muscles": ["Forearms"],
+        "exercise_type": "strength",
+        "equipment": ["dumbbell", "bench"],
+        "base_fatigue_score": 0.6
+    },
+    {
+        "name": "Cable lat pulldown (chin grip)",
+        "primary_muscles": ["Lats", "Biceps"],
+        "secondary_muscles": ["Forearms", "Rhomboids", "Rear delts"],
+        "exercise_type": "strength",
+        "equipment": ["cable machine"],
+        "base_fatigue_score": 1.5
+    },
+    {
+        "name": "EZ bar reverse curl",
+        "primary_muscles": ["Forearms", "Biceps"],
+        "secondary_muscles": [],
+        "exercise_type": "strength",
+        "equipment": ["ez bar"],
+        "base_fatigue_score": 0.7
+    },
+    {
+        "name": "Cable seated row (wide grip)",
+        "primary_muscles": ["Traps", "Rhomboids", "Rear delts"],
+        "secondary_muscles": ["Lats", "Biceps", "Forearms", "Lower back"],
+        "exercise_type": "strength",
+        "equipment": ["cable machine"],
+        "base_fatigue_score": 1.3
+    },
+    {
+        "name": "Leg press (single)",
+        "primary_muscles": ["Quads", "Glutes"],
+        "secondary_muscles": ["Hamstrings", "Adductors", "Calves"],
+        "exercise_type": "strength",
+        "equipment": ["leg press machine"],
+        "base_fatigue_score": 1.5
+    },
+    {
+        "name": "Dumbbell Incline Bench Press (single)",
+        "primary_muscles": ["Pecs", "Front delts"],
+        "secondary_muscles": ["Triceps"],
+        "exercise_type": "strength",
+        "equipment": ["dumbbell", "incline bench"],
+        "base_fatigue_score": 1.2
+    },
+    {
+        "name": "Dumbbell Bench Press (single)",
+        "primary_muscles": ["Pecs"],
+        "secondary_muscles": ["Front delts", "Triceps", "Obliques"],
+        "exercise_type": "strength",
+        "equipment": ["dumbbell", "bench"],
+        "base_fatigue_score": 1.3
+    },
+    {
+        "name": "Machine Seated Row (single)",
+        "primary_muscles": ["Lats", "Rhomboids", "Traps"],
+        "secondary_muscles": ["Biceps", "Forearms", "Rear delts", "Lower back", "Obliques"],
+        "exercise_type": "strength",
+        "equipment": ["seated row machine"],
+        "base_fatigue_score": 1.1
+    },
+    {
+        "name": "Machine Lat Pull Down (single)",
+        "primary_muscles": ["Lats"],
+        "secondary_muscles": ["Biceps", "Forearms", "Traps", "Rhomboids", "Rear delts", "Obliques"],
+        "exercise_type": "strength",
+        "equipment": ["lat pulldown machine"],
+        "base_fatigue_score": 1.2
+    },
+    {
+        "name": "Dumbbell Shrug (single)",
+        "primary_muscles": ["Traps"],
+        "secondary_muscles": ["Forearms", "Obliques"],
+        "exercise_type": "strength",
+        "equipment": ["dumbbell"],
+        "base_fatigue_score": 0.6
+    },
+    {
+        "name": "Cable Shrug (single)",
+        "primary_muscles": ["Traps"],
+        "secondary_muscles": ["Forearms", "Obliques"],
+        "exercise_type": "strength",
+        "equipment": ["cable machine"],
+        "base_fatigue_score": 0.6
+    },
+    {
+        "name": "Dumbbell Shoulder Press (side) (single)",
+        "primary_muscles": ["Side delts", "Front delts"],
+        "secondary_muscles": ["Triceps", "Traps", "Deep abs", "Obliques"],
+        "exercise_type": "strength",
+        "equipment": ["dumbbell"],
+        "base_fatigue_score": 1.2
+    },
+    {
+        "name": "Dumbbell Lateral Raise (single)",
+        "primary_muscles": ["Side delts"],
+        "secondary_muscles": ["Traps"],
+        "exercise_type": "strength",
+        "equipment": ["dumbbell"],
+        "base_fatigue_score": 0.5
+    },
+    {
+        "name": "Machine Shoulder Press (single)",
+        "primary_muscles": ["Front delts", "Side delts"],
+        "secondary_muscles": ["Triceps", "Traps", "Obliques"],
+        "exercise_type": "strength",
+        "equipment": ["shoulder press machine"],
+        "base_fatigue_score": 1.1
+    },
+    {
+        "name": "Dumbbell Shoulder Press (front) (single)",
+        "primary_muscles": ["Front delts"],
+        "secondary_muscles": ["Side delts", "Triceps", "Traps", "Deep abs", "Obliques"],
+        "exercise_type": "strength",
+        "equipment": ["dumbbell"],
+        "base_fatigue_score": 1.1
+    },
+    {
+        "name": "Skull Crusher (single)",
+        "primary_muscles": ["Triceps"],
+        "secondary_muscles": ["Front delts"],
+        "exercise_type": "strength",
+        "equipment": ["dumbbell", "bench"],
+        "base_fatigue_score": 0.8
+    },
+    {
+        "name": "Cable Triceps Pushdown (single)",
+        "primary_muscles": ["Triceps"],
+        "secondary_muscles": [],
+        "exercise_type": "strength",
+        "equipment": ["cable machine"],
+        "base_fatigue_score": 0.7
+    },
+    {
+        "name": "Cable Facing-away Curl",
+        "primary_muscles": ["Biceps"],
+        "secondary_muscles": ["Forearms", "Front delts"],
+        "exercise_type": "strength",
+        "equipment": ["cable machine"],
+        "base_fatigue_score": 0.7
+    }
+]
+
