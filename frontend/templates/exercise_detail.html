@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ exercise.name }}</title>
+</head>
+<body>
+    <h1>{{ exercise.name }}</h1>
+    <p>Target Sets: {{ exercise.target_sets }}</p>
+    <p>Target Reps: {{ exercise.target_reps }}</p>
+    <p>Target Weight: {{ exercise.target_weight }} kg</p>
+    <form action="{{ url_for('log_set', exercise_id=exercise.id) }}" method="post">
+        <label>Actual Reps: <input type="number" name="actual_reps" required></label><br>
+        <label>Actual Weight: <input type="number" name="actual_weight" step="0.1" required></label><br>
+        <button type="submit">Log Set</button>
+    </form>
+    <p><a href="{{ url_for('workout_overview')}}">Back to Workout</a></p>
+</body>
+</html>

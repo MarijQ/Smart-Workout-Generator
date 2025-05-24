@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Workout Overview</title>
+</head>
+<body>
+    <h1>Today's Workout</h1>
+    <ul>
+    {% for ex in exercises %}
+        <li><a href="{{ url_for('exercise_detail', exercise_id=ex.id) }}">{{ ex.name }}</a></li>
+    {% endfor %}
+    </ul>
+</body>
+</html>
